@@ -22,7 +22,7 @@ public class StartHandler {
 }
 ```
 ## Usage
-*JitPack*: see [here](https://jitpack.io/#snqlby/tgwebhook/1.0)
+*JitPack*: see [here](https://jitpack.io/#snqlby/tgwebhook/v1.0)
 
 ## Initialization
 ### Java Spring
@@ -58,10 +58,10 @@ public class Application {
 Supported annotations:
 - @InlineMethod
 - @CallbackMethod(data, game_short_name, locality, origin)
-- @ChannelMethod
+- @ChannelPostMethod
 - @JoinMethod(room, reason)
 - @LeaveMethod(room, reason)
-- @EditedChannelMethod
+- @EditedChannelPostMethod
 - @MessageMethod(locality)
 - @EditedMessageMethod
 - @CommandMethod(command, locality)

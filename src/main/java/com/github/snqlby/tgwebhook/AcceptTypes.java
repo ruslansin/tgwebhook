@@ -4,7 +4,7 @@ import com.github.snqlby.tgwebhook.methods.CallbackMethod;
 import com.github.snqlby.tgwebhook.methods.ChannelPostMethod;
 import com.github.snqlby.tgwebhook.methods.ChosenInlineMethod;
 import com.github.snqlby.tgwebhook.methods.CommandMethod;
-import com.github.snqlby.tgwebhook.methods.EditedChannelMethod;
+import com.github.snqlby.tgwebhook.methods.EditedChannelPostMethod;
 import com.github.snqlby.tgwebhook.methods.EditedMessageMethod;
 import com.github.snqlby.tgwebhook.methods.InlineMethod;
 import com.github.snqlby.tgwebhook.methods.JoinMethod;
@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
  * @see CommandMethod
  * @see JoinMethod
  * @see LeaveMethod
- * @see EditedChannelMethod
+ * @see EditedChannelPostMethod
  * @see EditedMessageMethod
  * @see InlineMethod
  * @see MessageMethod

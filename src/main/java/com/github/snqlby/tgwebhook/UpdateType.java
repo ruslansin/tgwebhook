@@ -4,7 +4,7 @@ import com.github.snqlby.tgwebhook.methods.CallbackMethod;
 import com.github.snqlby.tgwebhook.methods.ChannelPostMethod;
 import com.github.snqlby.tgwebhook.methods.ChosenInlineMethod;
 import com.github.snqlby.tgwebhook.methods.CommandMethod;
-import com.github.snqlby.tgwebhook.methods.EditedChannelMethod;
+import com.github.snqlby.tgwebhook.methods.EditedChannelPostMethod;
 import com.github.snqlby.tgwebhook.methods.EditedMessageMethod;
 import com.github.snqlby.tgwebhook.methods.InlineMethod;
 import com.github.snqlby.tgwebhook.methods.JoinMethod;
@@ -47,7 +47,7 @@ public enum UpdateType {
     LEAVE(LeaveMethod.class),
     EDITED_MESSAGE(EditedMessageMethod.class),
     CHANNEL_POST(ChannelPostMethod.class),
-    EDITED_CHANNEL_POST(EditedChannelMethod.class),
+    EDITED_CHANNEL_POST(EditedChannelPostMethod.class),
     SHIPPING_QUERY(ShippingMethod.class),
     PRE_CHECKOUT_QUERY(PreCheckoutMethod.class);
 

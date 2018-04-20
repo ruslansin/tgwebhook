@@ -9,7 +9,7 @@ import com.github.snqlby.tgwebhook.methods.CallbackOrigin;
 import com.github.snqlby.tgwebhook.methods.ChannelPostMethod;
 import com.github.snqlby.tgwebhook.methods.ChosenInlineMethod;
 import com.github.snqlby.tgwebhook.methods.CommandMethod;
-import com.github.snqlby.tgwebhook.methods.EditedChannelMethod;
+import com.github.snqlby.tgwebhook.methods.EditedChannelPostMethod;
 import com.github.snqlby.tgwebhook.methods.EditedMessageMethod;
 import com.github.snqlby.tgwebhook.methods.InlineMethod;
 import com.github.snqlby.tgwebhook.methods.JoinMethod;
@@ -131,7 +131,7 @@ public class RequestResolver implements Handler {
 
   @Override
   public BotApiMethod onEditedChannelPost(Update update) {
-    return invokeMethod(EditedChannelMethod.class, bot, update.getEditedChannelPost());
+    return invokeMethod(EditedChannelPostMethod.class, bot, update.getEditedChannelPost());
   }
 
   @Override
