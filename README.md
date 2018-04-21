@@ -22,7 +22,7 @@ public class StartHandler {
 }
 ```
 ## Usage
-*JitPack*: see [here](https://jitpack.io/#snqlby/tgwebhook/v1.0)
+*JitPack*: see [here](https://jitpack.io/#snqlby/tgwebhook/v1.1)
 
 ## Initialization
 ### Java Spring
@@ -62,7 +62,7 @@ Supported annotations:
 - @JoinMethod(room, reason)
 - @LeaveMethod(room, reason)
 - @EditedChannelPostMethod
-- @MessageMethod(locality)
+- @MessageMethod(locality,flag)
 - @EditedMessageMethod
 - @CommandMethod(command, locality)
 - @PreCheckoutMethod
