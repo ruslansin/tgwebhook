@@ -25,4 +25,11 @@ public @interface MessageMethod {
    * @see Locality
    */
   Locality[] locality() default Locality.ALL;
+
+  /**
+   * Message must contain any of these fields.
+   *
+   * @see MessageFlag
+   */
+  MessageFlag[] flag() default MessageFlag.ALL;
 }

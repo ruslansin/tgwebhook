@@ -16,6 +16,7 @@ import com.github.snqlby.tgwebhook.methods.JoinMethod;
 import com.github.snqlby.tgwebhook.methods.JoinReason;
 import com.github.snqlby.tgwebhook.methods.LeaveMethod;
 import com.github.snqlby.tgwebhook.methods.LeaveReason;
+import com.github.snqlby.tgwebhook.methods.MessageFlag;
 import com.github.snqlby.tgwebhook.methods.MessageMethod;
 import com.github.snqlby.tgwebhook.methods.PreCheckoutMethod;
 import com.github.snqlby.tgwebhook.methods.ShippingMethod;
@@ -73,7 +74,8 @@ public class RequestResolver implements Handler {
 
     }
 
-    return invokeMethod(MessageMethod.class, e -> Locality.accept(updateLocality, e), bot,
+    return invokeMethod(MessageMethod.class,
+        e -> Locality.accept(updateLocality, e) && MessageFlag.acceptAny(message, e), bot,
         update.getMessage());
   }
 
