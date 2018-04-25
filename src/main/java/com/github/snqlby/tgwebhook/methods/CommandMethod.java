@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * over MessageMethod. All methods with this annotation will be processed before MessageMethod.</p>
  *
  * <p>The method must contain these args and return back the following:</p>
- * {@code public BotApiMethod yourMethodName(AbsSender,Message)}
+ * {@code public BotApiMethod yourMethodName(AbsSender,Message,List<String>)}
  *
  * @see MessageMethod
  */

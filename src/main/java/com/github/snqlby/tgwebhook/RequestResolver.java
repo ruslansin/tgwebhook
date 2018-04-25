@@ -22,11 +22,14 @@ import com.github.snqlby.tgwebhook.methods.PreCheckoutMethod;
 import com.github.snqlby.tgwebhook.methods.ShippingMethod;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.LongStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,12 +55,12 @@ public class RequestResolver implements Handler {
     Message message = update.getMessage();
     Locality updateLocality = findMessageLocality(message);
     if (message.isCommand() && hasAnyMethod(CommandMethod.class)) {
-
-      String command = checkCommandPostfix(message.getText());
+      List<String> args = parseArgs(removeCommandPostfix(message.getText()));
+      String command = args.remove(0);
 
       return invokeMethod(CommandMethod.class,
           e -> e.command().equals(command) && Locality.accept(updateLocality, e), bot,
-          update.getMessage());
+          update.getMessage(), args);
     } else if (message.getNewChatMembers() != null && hasAnyMethod(JoinMethod.class)) {
       final long roomId = message.getChatId();
       JoinReason reason = findJoinReason(message);
@@ -172,12 +175,21 @@ public class RequestResolver implements Handler {
     return invokeMethod(type, e -> true, params);
   }
 
-  private String checkCommandPostfix(String command) {
+  private String removeCommandPostfix(String command) {
     String postfix = "@" + bot.getBotUsername();
     if (command.contains(postfix)) {
       return command.replaceFirst(postfix, "");
     }
     return command;
+  }
+
+  private List<String> parseArgs(String text) {
+    List<String> result = new ArrayList<>();
+    Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(text);
+    while (m.find()) {
+      result.add(m.group(1).replaceAll("\"", ""));
+    }
+    return result;
   }
 
   private JoinReason findJoinReason(Message message) {
