@@ -13,7 +13,7 @@ Code reduction is achieved through the use of annotations to configure accepted 
 public class StartHandler {
 
   @CommandMethod(value = "/start", locality = Locality.PRIVATE)
-  public BotApiMethod onStartCommand(AbsSender bot, Message message) {
+  public BotApiMethod onStartCommand(AbsSender bot, Message message, List<String> args) {
     return new SendMessage()
       .setText("Hello world")
       .setChatId(message.getChatId());
@@ -22,7 +22,7 @@ public class StartHandler {
 }
 ```
 ## Usage
-*JitPack*: see [here](https://jitpack.io/#snqlby/tgwebhook/v1.1)
+*JitPack*: see [here](https://jitpack.io/#snqlby/tgwebhook/v1.2)
 
 ## Initialization
 ### Java Spring
