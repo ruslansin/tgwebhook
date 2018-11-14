@@ -2,7 +2,7 @@ package com.github.snqlby.tgwebhook.methods;
 
 import java.util.Arrays;
 import java.util.List;
-import org.telegram.telegrambots.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 /**
  * The origin of the callback request. Callback buttons can be attached to any message or generated

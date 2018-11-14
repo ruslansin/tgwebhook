@@ -3,7 +3,7 @@ package com.github.snqlby.tgwebhook.methods;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
-import org.telegram.telegrambots.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.Message;
 
 /**
  * We use this when we want to filter which fields in the message are of interest to us.
