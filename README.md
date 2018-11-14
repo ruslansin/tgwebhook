@@ -22,7 +22,7 @@ public class StartHandler {
 }
 ```
 ## Usage
-*JitPack*: see [here](https://jitpack.io/#snqlby/tgwebhook/v1.2)
+*JitPack*: see [here](https://jitpack.io/#snqlby/tgwebhook/v1.2.1)
 
 ## Initialization
 ### Java Spring
