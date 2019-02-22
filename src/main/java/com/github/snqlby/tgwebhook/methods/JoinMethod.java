@@ -13,6 +13,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface JoinMethod {
-  long[] room();
+
+  long ANY = -1L;
+
+  long[] room() default ANY;
+
   JoinReason[] reason() default JoinReason.ALL;
 }

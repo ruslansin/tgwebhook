@@ -13,6 +13,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface LeaveMethod {
-  long[] room();
+
+  long ANY = -1L;
+
+  long[] room() default ANY;
+
   LeaveReason[] reason() default LeaveReason.ALL;
 }

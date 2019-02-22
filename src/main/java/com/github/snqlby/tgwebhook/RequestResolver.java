@@ -33,12 +33,12 @@ import java.util.regex.Pattern;
 import java.util.stream.LongStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
-import org.telegram.telegrambots.bots.TelegramWebhookBot;
 
 public class RequestResolver implements Handler {
 
@@ -65,14 +65,16 @@ public class RequestResolver implements Handler {
       final long roomId = message.getChatId();
       JoinReason reason = findJoinReason(message);
       return invokeMethod(JoinMethod.class,
-          e -> LongStream.of(e.room()).anyMatch(v -> v == roomId) && JoinReason.accept(reason, e),
+          e -> LongStream.of(e.room()).anyMatch(v -> v == JoinMethod.ANY || v == roomId)
+              && JoinReason.accept(reason, e),
           bot, message, reason);
 
     } else if (message.getLeftChatMember() != null && hasAnyMethod(LeaveMethod.class)) {
       final long roomId = message.getChatId();
       LeaveReason reason = findLeaveReason(message);
       return invokeMethod(LeaveMethod.class,
-          e -> LongStream.of(e.room()).anyMatch(v -> v == roomId) && LeaveReason.accept(reason, e),
+          e -> LongStream.of(e.room()).anyMatch(v -> v == LeaveMethod.ANY || v == roomId)
+              && LeaveReason.accept(reason, e),
           bot, message, reason);
 
     }
