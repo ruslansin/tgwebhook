@@ -9,68 +9,105 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.telegram.telegrambots.meta.api.objects.Update;
 
+/**
+ * Provide the single place to register handlers.
+ *
+ * <p>We are using spaces to isolate handler groups from each other. This may be necessary when
+ * servicing multiple bots in the same application.</p>
+ */
 public class Handlers {
 
+  public static final String DEFAULT_SPACE = "default";
   private static final Logger LOG = LoggerFactory.getLogger(Handlers.class);
+  private static final Handlers instance = new Handlers();
+  private final Map<String, List<HandlerInfo>> handlers;
 
-  private static Handlers instance = null;
-  private final List<HandlerInfo> handlers;
-
-  public Handlers() {
-    this.handlers = new ArrayList<>();
+  private Handlers() {
+    this.handlers = new HashMap<>();
   }
 
-  /**
-   * Singletone for Handlers.
-   *
-   * @return instance of Handlers
-   */
-  private static synchronized Handlers getInstance() {
-    if (instance == null) {
-      instance = new Handlers();
-    }
-
+  private static Handlers getInstance() {
     return instance;
   }
 
+  /**
+   * Add a new handler to default space.
+   */
   public static void addHandler(Object object) {
-    getInstance().handlers.add(new HandlerInfo(object));
+    addHandler(DEFAULT_SPACE, object);
   }
 
+  /**
+   * Add a new handler to specified space.
+   */
+  public static synchronized void addHandler(String space, Object object) {
+    getInstance().handlers.putIfAbsent(space, new ArrayList<>());
+    List<HandlerInfo> spaceHandlers = getInstance().handlers.get(space);
+    spaceHandlers.add(new HandlerInfo(object));
+  }
+
+  public static synchronized void clearHandlers(String space) {
+    getInstance().handlers.remove(space);
+  }
+
+  /**
+   * Return handlers for default space.
+   *
+   * @return empty list if not found
+   */
   public static List<HandlerInfo> getHandlers() {
-    return getInstance().handlers;
+    return getHandlers(DEFAULT_SPACE);
   }
 
-  public static List<HandlerInfo> getHandlers(Update update) {
-    return getHandlers();
+  /**
+   * Return handlers for specified space.
+   *
+   * @return empty list if not found
+   */
+  public static synchronized List<HandlerInfo> getHandlers(String space) {
+    List<HandlerInfo> spaceHandlers = getInstance().handlers.get(space);
+    if (spaceHandlers == null) {
+      return Collections.emptyList();
+    }
+    return Collections.unmodifiableList(spaceHandlers);
+  }
+
+  /**
+   * Return presented spaces.
+   */
+  public static Set<String> getSpaces() {
+    return getInstance().handlers.keySet();
   }
 
   /**
    * Checks if there is at least one class with a Method annotation.
-   *
-   * @return true if at least one class contains a method with Method annotation
    */
-  public static boolean hasAnyMethod(Class<? extends Annotation> method) {
+  public static boolean hasAnyMethod(String space, Class<? extends Annotation> method) {
     SubUpdateType methodSubType = SubUpdateType.findByClass(method);
     Optional<UpdateType> methodType = findParent(method);
-    if (methodSubType == null || !methodType.isPresent()) {
+    List<HandlerInfo> spaceHandlers = getInstance().handlers.get(space);
+    if (methodSubType == null || !methodType.isPresent() || spaceHandlers == null) {
       return false;
     }
 
-    for (HandlerInfo handler : getInstance().handlers) {
+    for (HandlerInfo handler : spaceHandlers) {
       if (handler.getUpdateTypes().contains(methodType.get()) && handler.getMethodProcessors()
           .containsValue(methodSubType)) {
         return true;
       }
     }
-
     return false;
+  }
+
+  @Deprecated
+  public static boolean hasAnyMethod(Class<? extends Annotation> method) {
+    return hasAnyMethod(DEFAULT_SPACE, method);
   }
 
   /**
@@ -83,9 +120,9 @@ public class Handlers {
    * @see RequestResolver
    */
   public static <A extends Annotation> Map<Method, HandlerInfo> findHandlersForRequest(
-      Class<A> type, Predicate<A> predicate) {
+      String space, Class<A> type, Predicate<A> predicate) {
     Map<Method, HandlerInfo> result = new HashMap<>();
-    final List<HandlerInfo> handlers = getHandlers();
+    final List<HandlerInfo> handlers = getHandlers(space);
 
     for (HandlerInfo handlerInfo : handlers) {
 
@@ -113,6 +150,11 @@ public class Handlers {
     return result;
   }
 
+  public static <A extends Annotation> Map<Method, HandlerInfo> findHandlersForRequest(
+      Class<A> type, Predicate<A> predicate) {
+    return findHandlersForRequest(DEFAULT_SPACE, type, predicate);
+  }
+
   private static Optional<UpdateType> findParent(Class<? extends Annotation> type) {
     return Stream.of(UpdateType.values()).filter(e -> {
       List<SubUpdateType> subTypes = e.getSubTypes();
@@ -123,61 +165,5 @@ public class Handlers {
       }
       return false;
     }).findFirst();
-  }
-
-  public static class HandlerInfo {
-
-    private Object handler;
-    private List<UpdateType> updateTypes = new ArrayList<>();
-    private Map<Method, SubUpdateType> methodProcessors = new HashMap<>();
-
-    /**
-     * Stores information about AccessType values and method annotations per class.
-     *
-     * @param handler a class instance with declared AccessType annotation
-     */
-    public HandlerInfo(Object handler) {
-      this.handler = handler;
-      AcceptTypes acceptTypes = handler.getClass().getAnnotation(AcceptTypes.class);
-      Optional.ofNullable(acceptTypes).ifPresent(e -> Collections.addAll(updateTypes, e.value()));
-
-      Stream.of(handler.getClass().getMethods()).forEach(e -> {
-        Optional<SubUpdateType> processor = Optional.ofNullable(findProcessor(e));
-        processor.ifPresent(subUpdateType -> methodProcessors.put(e, subUpdateType));
-      });
-    }
-
-    /**
-     * Searches supported annotation for the the method.
-     *
-     * @param method method from a class with AccessType annotation
-     */
-    private SubUpdateType findProcessor(Method method) {
-      for (SubUpdateType type : SubUpdateType.values()) {
-        for (Annotation annotation : method.getAnnotations()) {
-          if (type.getAnnotation().isAssignableFrom(annotation.getClass())) {
-            return type;
-          }
-        }
-      }
-
-      return null;
-    }
-
-    public Object getHandler() {
-      return handler;
-    }
-
-    public List<UpdateType> getUpdateTypes() {
-      return updateTypes;
-    }
-
-    public Map<Method, SubUpdateType> getMethodProcessors() {
-      return methodProcessors;
-    }
-
-    public Method getMethod() {
-      return null;
-    }
   }
 }

@@ -3,7 +3,6 @@ package com.github.snqlby.tgwebhook;
 import static com.github.snqlby.tgwebhook.Handlers.hasAnyMethod;
 import static com.github.snqlby.tgwebhook.methods.CallbackOrigin.findOrigin;
 
-import com.github.snqlby.tgwebhook.Handlers.HandlerInfo;
 import com.github.snqlby.tgwebhook.methods.CallbackMethod;
 import com.github.snqlby.tgwebhook.methods.CallbackOrigin;
 import com.github.snqlby.tgwebhook.methods.ChannelPostMethod;
@@ -43,25 +42,39 @@ import org.telegram.telegrambots.meta.api.objects.User;
 public class RequestResolver implements Handler {
 
   private static final Logger LOG = LoggerFactory.getLogger(RequestResolver.class);
+  private final String space;
 
   private TelegramWebhookBot bot;
 
-  public RequestResolver(TelegramWebhookBot bot) {
+  /**
+   * Provides a possibility to use custom space for handles.
+   *
+   * <p>It can be used to support multiple bots per application.</p>
+   */
+  public RequestResolver(String space, TelegramWebhookBot bot) {
+    this.space = space;
     this.bot = bot;
+  }
+
+  /**
+   * Provides default space for handlers.
+   */
+  public RequestResolver(TelegramWebhookBot bot) {
+    this(Handlers.DEFAULT_SPACE, bot);
   }
 
   @Override
   public BotApiMethod onMessage(Update update) {
     Message message = update.getMessage();
     Locality updateLocality = findMessageLocality(message);
-    if (message.isCommand() && hasAnyMethod(CommandMethod.class)) {
+    if (message.isCommand() && hasAnyMethod(space, CommandMethod.class)) {
       List<String> args = parseArgs(removeCommandPostfix(message.getText()));
       String command = args.remove(0);
 
       return invokeMethod(CommandMethod.class,
           e -> e.command().equals(command) && Locality.accept(updateLocality, e), bot,
           update.getMessage(), args);
-    } else if (message.getNewChatMembers() != null && hasAnyMethod(JoinMethod.class)) {
+    } else if (message.getNewChatMembers() != null && hasAnyMethod(space, JoinMethod.class)) {
       final long roomId = message.getChatId();
       JoinReason reason = findJoinReason(message);
       return invokeMethod(JoinMethod.class,
@@ -69,7 +82,7 @@ public class RequestResolver implements Handler {
               && JoinReason.accept(reason, e),
           bot, message, reason);
 
-    } else if (message.getLeftChatMember() != null && hasAnyMethod(LeaveMethod.class)) {
+    } else if (message.getLeftChatMember() != null && hasAnyMethod(space, LeaveMethod.class)) {
       final long roomId = message.getChatId();
       LeaveReason reason = findLeaveReason(message);
       return invokeMethod(LeaveMethod.class,
@@ -153,7 +166,7 @@ public class RequestResolver implements Handler {
 
   private <A extends Annotation> BotApiMethod invokeMethod(Class<A> type, Predicate<A> predicate,
       Object... params) {
-    Map<Method, HandlerInfo> handlers = Handlers.findHandlersForRequest(type, predicate);
+    Map<Method, HandlerInfo> handlers = Handlers.findHandlersForRequest(space, type, predicate);
     if (handlers.isEmpty()) {
       LOG.warn("Cannot find a handler for request {}", type);
       return null;
