@@ -24,6 +24,9 @@ public class StartHandler {
 ## Usage
 *JitPack*: see [here](https://jitpack.io/#snqlby/tgwebhook/v1.4.0)
 
+## Bot examples
+GuardBot: https://github.com/snqlby/guardbot
+
 ## Initialization
 ### Java Spring
 If you are using Spring for your application, try the following way:
