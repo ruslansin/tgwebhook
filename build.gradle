@@ -28,4 +28,5 @@ sourceCompatibility = 1.8
 dependencies {
     implementation group: 'org.telegram', name: 'telegrambots', version: '4.1.2'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    compileOnly group: 'org.telegram', name: 'telegrambots', version: '4.2'
 }
