@@ -14,6 +14,7 @@ import com.github.snqlby.tgwebhook.methods.PreCheckoutMethod;
 import com.github.snqlby.tgwebhook.methods.ShippingMethod;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -22,6 +23,7 @@ import java.lang.annotation.Target;
  * Defines a class which will contain handlers for update requests. You can define any methods
  * inside the class, but must follow method signatures if you mark methods with a Method-like
  * annotation.
+ *
  * @see CallbackMethod
  * @see ChannelPostMethod
  * @see ChosenInlineMethod
@@ -38,6 +40,7 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
+@Inherited
 @Documented
 public @interface AcceptTypes {
 
