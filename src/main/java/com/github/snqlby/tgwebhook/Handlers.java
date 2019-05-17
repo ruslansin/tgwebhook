@@ -1,5 +1,7 @@
 package com.github.snqlby.tgwebhook;
 
+import static com.github.snqlby.tgwebhook.utils.AnnotationUtils.getMethodAnnotation;
+
 import com.github.snqlby.tgwebhook.UpdateType.SubUpdateType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -139,7 +141,7 @@ public class Handlers {
       Class<?> clazz = handlerInfo.getHandler().getClass();
 
       for (Method method : clazz.getMethods()) {
-        A annotation = method.getDeclaredAnnotation(type);
+        A annotation = getMethodAnnotation(type, method.getDeclaringClass(), method);
         if (annotation != null && predicate.test(annotation)) {
           result.put(method, handlerInfo);
         }

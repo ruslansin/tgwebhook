@@ -1,5 +1,7 @@
 package com.github.snqlby.tgwebhook;
 
+import static com.github.snqlby.tgwebhook.utils.AnnotationUtils.getMethodAnnotation;
+
 import com.github.snqlby.tgwebhook.UpdateType.SubUpdateType;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -39,10 +41,12 @@ public class HandlerInfo {
    * @param method method from a class with AccessType annotation
    */
   private SubUpdateType findProcessor(Method method) {
-    for (SubUpdateType type : SubUpdateType.values()) {
-      for (Annotation annotation : method.getAnnotations()) {
-        if (type.getAnnotation().isAssignableFrom(annotation.getClass())) {
-          return type;
+    for (UpdateType type : getUpdateTypes()) {
+      for (SubUpdateType subType : type.getSubTypes()) {
+        Annotation annotation = getMethodAnnotation(subType.getAnnotation(),
+            method.getDeclaringClass(), method);
+        if (annotation != null) {
+          return subType;
         }
       }
     }
