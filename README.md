@@ -22,7 +22,7 @@ public class StartHandler {
 }
 ```
 ## Usage
-*JitPack*: see [here](https://jitpack.io/#snqlby/tgwebhook/v1.4.0)
+*JitPack*: see [here](https://jitpack.io/#snqlby/tgwebhook/v1.5.0)
 
 ## Bot examples
 GuardBot: https://github.com/snqlby/guardbot
